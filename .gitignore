@@ -31,3 +31,7 @@
 *.tmpdata
 *.tmpin
 *.tmpout
+
+# coff file
+*.o
+*.obj
