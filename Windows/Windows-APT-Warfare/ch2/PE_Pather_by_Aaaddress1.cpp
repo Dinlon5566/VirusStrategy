@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 	PIMAGE_SECTION_HEADER newSectionHdr = lastestSecHdr + 1;
 
 	//set name
-	memcpy(newSectionHdr->Name, "30cm.tw", 8);
+	memcpy(newSectionHdr->Name, "newBlock", 9);
 	//set vritualsize = sizeof shellcode after align
 	newSectionHdr->Misc.VirtualSize = P2ALIGNUP(sizeof(x86_nullfree_msgbox), sectAlign);
 	//set address = last hdr + it size
