@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<!-- 這東西就只是虛擬機共用資料夾模組壞掉，暫時用的 -->
 <html>
 <head>
-    <title>傳資料</title>
+    <title>虛擬機資料傳輸</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
         #outputArea {
@@ -44,10 +43,10 @@
             $data = file_get_contents($file);
             $brief = mb_substr($data, 0, 20);
             echo "<tr>
-                    <td><a href=\"?file=$file\">{$file}</a></td>
-                    <td>{$brief}</td>
+                    <td><a href=\"?file=".urlencode($file)."\">".htmlspecialchars($file)."</a></td>
+                    <td>".htmlspecialchars($brief)."</td>
                     <td>{$time}</td>
-                    <td><a href=\"?delete=$file\" class=\"btn btn-danger btn-sm\">刪除</a></td>
+                    <td><a href=\"?delete=".urlencode($file)."\" class=\"btn btn-danger btn-sm\">刪除</a></td>
                   </tr>";
         }
         ?>
@@ -59,12 +58,12 @@
 if(isset($_POST['dataInput'])) {
     $data = $_POST['dataInput'];
     $id = uniqid();
-    file_put_contents("{$id}.txt", $data);
-    echo "<script>document.getElementById('outputArea').innerText = `{$data}`;</script>";
+    file_put_contents("{$id}_" . substr($data, 0, 10) . ".txt", $data);
+    echo "<script>document.getElementById('outputArea').innerText = ".json_encode($data).";</script>";
 }
 if(isset($_GET['file'])) {
     $data = file_get_contents($_GET['file']);
-    echo "<script>document.getElementById('outputArea').innerText = `{$data}`;</script>";
+    echo "<script>document.getElementById('outputArea').innerText = ".json_encode($data).";</script>";
 }
 if(isset($_GET['delete'])) {
     unlink($_GET['delete']);
